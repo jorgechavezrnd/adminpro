@@ -11,6 +11,9 @@ import { MedicoService } from '../../services/service.index';
 export class MedicosComponent implements OnInit {
 
   medicos: Medico[] = [];
+  desde: number = 0;
+
+  cargando: boolean = true;
 
   constructor(public _medicoService: MedicoService) { }
 
@@ -22,8 +25,33 @@ export class MedicosComponent implements OnInit {
 
   cargarMedicos() {
 
-    this._medicoService.cargarMedicos()
-          .subscribe(medicos => this.medicos = medicos);
+    this.cargando = true;
+
+    this._medicoService.cargarMedicos(this.desde)
+          .subscribe(medicos => {
+
+            this.medicos = medicos;
+            this.cargando = false;
+
+          });
+
+  }
+
+  cambiarDesde(valor: number) {
+
+    const desde = this.desde + valor;
+    console.log(desde);
+
+    if (desde >= this._medicoService.totalMedicos) {
+      return;
+    }
+
+    if (desde < 0) {
+      return;
+    }
+
+    this.desde += valor;
+    this.cargarMedicos();
 
   }
 
@@ -34,8 +62,15 @@ export class MedicosComponent implements OnInit {
       return;
     }
 
+    this.cargando = true;
+
     this._medicoService.buscarMedicos(termino)
-          .subscribe(medicos => this.medicos = medicos);
+          .subscribe(medicos => {
+
+            this.medicos = medicos;
+            this.cargando = false;
+
+          });
 
   }
 
